@@ -10,7 +10,6 @@ namespace :report do
   desc "Output evaluations report"
   task :evaluations, %i[date_string states] => :environment do |_, args|
     valid_date_regex = /^\d{4}-\d{2}$/
-    valid_states = DiscoveryEngine::Quality::EvaluationsReporter::VALID_STATES
 
     if args[:date_string]
       date_string = args[:date_string]
@@ -18,10 +17,19 @@ namespace :report do
     end
 
     if args[:states]
-      states = args[:states].split(" ").map { |arg| arg.upcase.to_sym }
-      raise "state must be one of #{valid_states.to_sentence}" unless (states - valid_states).empty?
+      states = split_and_validate_states(args[:states])
     end
 
     DiscoveryEngine::Quality::EvaluationsReporter.new(date_string:, states:).fetch_and_format
   end
+end
+
+def split_and_validate_states(states)
+  return unless states
+
+  valid_states = DiscoveryEngine::Quality::EvaluationsReporter::VALID_STATES
+  split_states = states.split(" ").map { |arg| arg.upcase.to_sym }
+  raise "state must be one of #{valid_states.to_sentence}" unless (split_states - valid_states).empty?
+
+  split_states
 end
