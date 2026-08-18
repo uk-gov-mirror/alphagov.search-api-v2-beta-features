@@ -1,5 +1,7 @@
 module DiscoveryEngine::Quality
   class EvaluationsReporter
+    VALID_STATES = %i[FAILED SUCCEEDED PENDING RUNNING].freeze
+
     # date_string format is "2026-02"
     def initialize(date_string: nil, states: [])
       @date_string = date_string
@@ -9,12 +11,7 @@ module DiscoveryEngine::Quality
     attr_reader :date_string, :states
 
     def fetch_and_format
-      evaluations_grouped_by_state = {
-        FAILED: [],
-        SUCCEEDED: [],
-        PENDING: [],
-        RUNNING: [],
-      }
+      evaluations_grouped_by_state = VALID_STATES.index_with { [] }
 
       if states.present?
         evaluations_grouped_by_state.select! { |k, _v| states.include?(k) }

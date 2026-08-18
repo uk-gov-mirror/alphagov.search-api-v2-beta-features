@@ -10,7 +10,7 @@ namespace :report do
   desc "Output evaluations report"
   task :evaluations, %i[date_string states] => :environment do |_, args|
     valid_date_regex = /^\d{4}-\d{2}$/
-    valid_states = %i[FAILED PENDING RUNNING SUCCEEDED]
+    valid_states = DiscoveryEngine::Quality::EvaluationsReporter::VALID_STATES
 
     if args[:date_string]
       date_string = args[:date_string]
